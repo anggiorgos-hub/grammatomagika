@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#6557ff">
+<title>ΓραμματοΜαγικά 2.1 ✨</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --ink:#26243a;--muted:#74728a;--primary:#6557ff;--primary2:#9287ff;
+  --good:#20ad67;--warn:#f2a71b;--bad:#e05262;--card:#fff;--line:#e5e6f1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:ui-rounded,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+body{background:linear-gradient(180deg,#f2efff,#fbfcff);-webkit-tap-highlight-color:transparent}
+button{font:inherit}
+button:focus-visible{outline:4px solid rgba(101,87,255,.25);outline-offset:2px}
+.app{width:min(1140px,100%);margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#a469ff);color:#fff;
+display:grid;place-items:center;font-size:30px;font-weight:900;box-shadow:0 10px 24px rgba(101,87,255,.26)}
+h1{margin:0;font-size:clamp(23px,4vw,35px)} .subtitle{margin:3px 0 0;color:var(--muted);font-size:14px}
+.score-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.pill{background:white;border:1px solid #ececf5;border-radius:15px;padding:9px 12px;font-weight:900;box-shadow:0 5px 15px rgba(30,35,80,.06)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:10px}
+.tab,.level{border:0;border-radius:15px;padding:12px 8px;background:#fff;font-weight:850;cursor:pointer;color:var(--ink);box-shadow:0 4px 12px rgba(30,35,80,.05)}
+.tab.active{background:var(--primary);color:#fff}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.level{font-size:13px;background:#f8f8ff}
+.level.active{background:#e9e6ff;color:#5144e9;box-shadow:inset 0 0 0 2px #8c81ff}
+.layout{display:grid;grid-template-columns:290px 1fr;gap:16px}
+.card{background:rgba(255,255,255,.95);border:1px solid #ececf5;border-radius:24px;box-shadow:0 10px 30px rgba(37,36,58,.08)}
+.side{padding:15px}.side h2{font-size:17px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-height:61vh;overflow:auto}
+.choice{position:relative;border:2px solid transparent;border-radius:13px;min-height:46px;background:#f4f5ff;color:var(--ink);font-size:21px;font-weight:900;cursor:pointer}
+.choice.active{border-color:var(--primary);background:#ebe9ff;color:var(--primary)}
+.choice.done::after{content:"✓";position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--good);color:#fff;font-size:10px;display:grid;place-items:center}
+.choice .mini{position:absolute;bottom:1px;right:4px;font-size:9px;color:#777}
+.progress{height:10px;background:#eeeef7;border-radius:999px;overflow:hidden;margin-top:14px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#a56fff)}
+.muted{color:var(--muted);font-size:12px}
+.work{padding:17px;display:flex;flex-direction:column;gap:11px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.target{display:flex;align-items:center;gap:12px}
+.target-char{width:74px;height:74px;border-radius:20px;background:#efedff;display:grid;place-items:center;color:var(--primary);font-size:46px;font-weight:900}
+.target h2{margin:0;font-size:24px}.target p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:0;border-radius:13px;padding:10px 12px;font-weight:850;cursor:pointer;background:#f0f1f7;color:var(--ink)}
+.btn.primary{background:var(--primary);color:#fff}.btn.good{background:var(--good);color:#fff}
+.btn[aria-pressed="true"]{background:#e6e3ff;color:#5144e9}
+.canvas-wrap{position:relative;width:100%;aspect-ratio:1.65/1;min-height:340px;max-height:600px;border:3px dashed #d9dbea;border-radius:24px;background:#fff;overflow:hidden;touch-action:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}#guideCanvas{z-index:1}#drawCanvas{z-index:2}
+.canvas-wrap.demo #guideCanvas{animation:pulseGuide 1s ease-in-out infinite alternate}
+@keyframes pulseGuide{from{opacity:.58}to{opacity:1}}
+.info-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.hint{background:#fafaff;border-radius:14px;padding:10px 12px;color:var(--muted);font-size:13px}
+.best{font-weight:900;white-space:nowrap;font-size:13px}
+.feedback{display:none;border-radius:16px;padding:13px 14px;font-weight:850}
+.feedback.show{display:block}.feedback.good{background:#e7f8ef;color:#137b48}.feedback.try{background:#fff4dc;color:#8f6100}.feedback.bad{background:#ffecef;color:#a83a49}
+.meter{display:none;background:#f7f7fc;border-radius:16px;padding:12px}.meter.show{display:block}
+.meter-head{display:flex;justify-content:space-between;font-weight:900;margin-bottom:7px}
+.meter-bar{height:13px;border-radius:999px;background:#e8e9f3;overflow:hidden}.meter-fill{height:100%;width:0;background:linear-gradient(90deg,#f0a61b,#20ad67)}
+.details{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px;color:var(--muted);font-size:12px}
+footer{text-align:center;color:#9996aa;font-size:12px;margin:13px 0 3px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}.piece{position:absolute;top:-20px;width:9px;height:15px;border-radius:3px;animation:fall 1.65s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.95}}
+@media (prefers-reduced-motion:reduce){.canvas-wrap.demo #guideCanvas,.piece{animation:none}}
+@media(max-width:790px){
+  .app{padding:9px}.layout{grid-template-columns:1fr}.work{order:1;padding:12px}.side{order:2}
+  .grid{grid-template-columns:repeat(8,1fr);max-height:none}.choice{min-height:41px;font-size:18px}
+  .canvas-wrap{aspect-ratio:.92/1;min-height:385px}.subtitle{display:none}.logo{width:46px;height:46px;border-radius:15px}
+  .target-char{width:62px;height:62px;font-size:39px}.target h2{font-size:20px}.pill{padding:8px 9px}
+}
+@media(max-width:520px){.grid{grid-template-columns:repeat(6,1fr)}.tab,.level{font-size:12px;padding:10px 4px}.info-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">Α</div><div><h1>ΓραμματοΜαγικά 2.1</h1><p class="subtitle">Μαθαίνω να γράφω παίζοντας ✨</p></div></div>
+  <div class="score-box"><div class="pill">⭐ <span id="stars">0</span></div><div class="pill">🏆 <span id="perfect">0</span></div></div>
+</header>
+
+<nav class="tabs" aria-label="Κατηγορία">
+  <button class="tab active" data-mode="upper">Α Β Γ · Κεφαλαία</button>
+  <button class="tab" data-mode="lower">α β γ · Πεζά</button>
+  <button class="tab" data-mode="numbers">1 2 3 · Αριθμοί</button>
+</nav>
+
+<div class="levels" aria-label="Επίπεδο βοήθειας">
+  <button class="level active" data-level="trace">1 · Πάνω στις γραμμές</button>
+  <button class="level" data-level="faint">2 · Λίγη βοήθεια</button>
+  <button class="level" data-level="free">3 · Μόνος/η μου</button>
+</div>
+
+<main class="layout">
+  <aside class="card side">
+    <h2 id="listTitle">Διάλεξε γράμμα</h2>
+    <div class="grid" id="choiceGrid"></div>
+    <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+    <div class="muted" id="progressText" style="margin-top:6px">Πρόοδος: 0%</div>
+  </aside>
+
+  <section class="card work">
+    <div class="top">
+      <div class="target">
+        <div class="target-char" id="targetChar">Α</div>
+        <div><h2 id="targetName">Άλφα</h2><p id="instruction">Πέρασε το δάχτυλό σου πάνω στις γραμμές.</p></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="soundBtn" aria-label="Άκου την προφορά">🔊 Άκου</button>
+        <button class="btn" id="guideBtn" aria-pressed="false">👀 Οδηγός</button>
+        <button class="btn" id="undoBtn">↶ Πίσω</button>
+        <button class="btn" id="clearBtn">↻ Καθάρισμα</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="guideCanvas"></canvas>
+      <canvas id="drawCanvas" aria-label="Περιοχή γραφής"></canvas>
+    </div>
+
+    <div class="info-row">
+      <div class="hint" id="hint">✏️ Γράψε αργά. Η εφαρμογή θα ελέγξει πόσο καλά ακολούθησες το σχήμα.</div>
+      <div class="best" id="best">Καλύτερο: —</div>
+    </div>
+
+    <button class="btn good" id="checkBtn">✓ Έλεγχος γραφής</button>
+
+    <div class="meter" id="meter">
+      <div class="meter-head"><span>Ακρίβεια</span><span id="scoreText">0%</span></div>
+      <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="details"><span id="coverageText">Κάλυψη: 0%</span><span id="precisionText">Εντός γραμμών: 0%</span></div>
+    </div>
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer>Η αξιολόγηση είναι εκπαιδευτική/ενδεικτική και η πρόοδος αποθηκεύεται τοπικά στη συσκευή.</footer>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+const data={
+upper:[["Α","Άλφα"],["Β","Βήτα"],["Γ","Γάμμα"],["Δ","Δέλτα"],["Ε","Έψιλον"],["Ζ","Ζήτα"],["Η","Ήτα"],["Θ","Θήτα"],["Ι","Ιώτα"],["Κ","Κάππα"],["Λ","Λάμδα"],["Μ","Μι"],["Ν","Νι"],["Ξ","Ξι"],["Ο","Όμικρον"],["Π","Πι"],["Ρ","Ρο"],["Σ","Σίγμα"],["Τ","Ταυ"],["Υ","Ύψιλον"],["Φ","Φι"],["Χ","Χι"],["Ψ","Ψι"],["Ω","Ωμέγα"]],
+lower:[["α","άλφα"],["β","βήτα"],["γ","γάμμα"],["δ","δέλτα"],["ε","έψιλον"],["ζ","ζήτα"],["η","ήτα"],["θ","θήτα"],["ι","ιώτα"],["κ","κάππα"],["λ","λάμδα"],["μ","μι"],["ν","νι"],["ξ","ξι"],["ο","όμικρον"],["π","πι"],["ρ","ρο"],["σ","σίγμα"],["τ","ταυ"],["υ","ύψιλον"],["φ","φι"],["χ","χι"],["ψ","ψι"],["ω","ωμέγα"]],
+numbers:[["1","ένα"],["2","δύο"],["3","τρία"],["4","τέσσερα"],["5","πέντε"],["6","έξι"],["7","επτά"],["8","οκτώ"],["9","εννέα"],["10","δέκα"]]
+};
+
+let mode=localStorage.getItem("gm-mode")||"upper";
+let level=localStorage.getItem("gm-level")||"trace";
+let idx=0,drawing=false,strokes=[],currentStroke=null;
+let completed=JSON.parse(localStorage.getItem("gm2-completed")||"{}");
+let bestScores=JSON.parse(localStorage.getItem("gm2-best")||"{}");
+let stars=Number(localStorage.getItem("gm2-stars")||0);
+let perfect=Number(localStorage.getItem("gm2-perfect")||0);
+
+const $=id=>document.getElementById(id);
+const wrap=$("canvasWrap"),guide=$("guideCanvas"),draw=$("drawCanvas");
+const gctx=guide.getContext("2d"),dctx=draw.getContext("2d");
+const targetMask=document.createElement("canvas"),nearMask=document.createElement("canvas"),userWide=document.createElement("canvas");
+
+function itemKey(i=idx){return `${mode}-${i}`}
+
+function fitCanvases(){
+  const r=wrap.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+  [guide,draw,targetMask,nearMask,userWide].forEach(c=>{c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr)});
+  [gctx,dctx,targetMask.getContext("2d"),nearMask.getContext("2d"),userWide.getContext("2d")].forEach(ctx=>ctx.setTransform(dpr,0,0,dpr,0,0));
+  renderGuide();redrawUser();
+}
+
+function glyphSettings(){
+  const r=wrap.getBoundingClientRect(),ch=data[mode][idx][0];
+  const fs=Math.min(r.height*.70,r.width*(ch==="10"?.40:.54));
+  return {w:r.width,h:r.height,ch,fs,x:r.width/2,y:r.height/2+fs*.025};
+}
+
+function renderText(ctx,kind){
+  const {w,h,ch,fs,x,y}=glyphSettings();
+  ctx.clearRect(0,0,w,h);ctx.save();
+  ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`900 ${fs}px Arial,"Segoe UI",sans-serif`;
+  ctx.lineJoin="round";ctx.lineCap="round";
+  if(kind==="target"){ctx.fillStyle="#000";ctx.fillText(ch,x,y)}
+  if(kind==="near"){ctx.fillStyle="#000";ctx.fillText(ch,x,y);ctx.strokeStyle="#000";ctx.lineWidth=Math.max(24,fs*.065);ctx.strokeText(ch,x,y)}
+  ctx.restore();
+}
+
+function renderGuide(){
+  const {w,h,ch,fs,x,y}=glyphSettings();
+  gctx.clearRect(0,0,w,h);gctx.save();
+  gctx.strokeStyle="#e8e9f4";gctx.lineWidth=2;gctx.setLineDash([8,8]);
+  [0.25,0.5,0.75].forEach(v=>{gctx.beginPath();gctx.moveTo(18,h*v);gctx.lineTo(w-18,h*v);gctx.stroke()});
+  gctx.setLineDash([]);
+  gctx.textAlign="center";gctx.textBaseline="middle";gctx.font=`900 ${fs}px Arial,"Segoe UI",sans-serif`;gctx.lineJoin="round";
+  if(level==="trace"){
+    gctx.fillStyle="rgba(101,87,255,.04)";gctx.fillText(ch,x,y);
+    gctx.strokeStyle="#c4c5d8";gctx.lineWidth=Math.max(7,fs*.024);gctx.setLineDash([12,10]);gctx.strokeText(ch,x,y);gctx.setLineDash([]);
+  }else if(level==="faint"){
+    gctx.fillStyle="rgba(101,87,255,.085)";gctx.fillText(ch,x,y);
+    gctx.strokeStyle="rgba(101,87,255,.20)";gctx.lineWidth=Math.max(4,fs*.013);gctx.strokeText(ch,x,y);
+  }else{
+    gctx.fillStyle="rgba(101,87,255,.12)";
+    gctx.font=`900 ${Math.min(58,fs*.18)}px Arial,"Segoe UI",sans-serif`;
+    gctx.textAlign="left";gctx.textBaseline="top";gctx.fillText(ch,18,15);
+  }
+  gctx.restore();
+  renderText(targetMask.getContext("2d"),"target");
+  renderText(nearMask.getContext("2d"),"near");
+}
+
+function redrawUser(){
+  const r=wrap.getBoundingClientRect();dctx.clearRect(0,0,r.width,r.height);
+  dctx.strokeStyle="#6557ff";dctx.lineCap="round";dctx.lineJoin="round";dctx.lineWidth=Math.max(10,r.width*.018);
+  strokes.forEach(s=>drawStroke(dctx,s));
+}
+function drawStroke(ctx,s){
+  if(!s||!s.length)return;ctx.beginPath();ctx.moveTo(s[0].x,s[0].y);
+  for(let i=1;i<s.length;i++)ctx.lineTo(s[i].x,s[i].y);
+  if(s.length===1){ctx.lineTo(s[0].x+.1,s[0].y+.1)}ctx.stroke();
+}
+
+function ppos(e){const r=draw.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function begin(e){e.preventDefault();drawing=true;currentStroke=[ppos(e)];strokes.push(currentStroke);redrawUser();try{draw.setPointerCapture(e.pointerId)}catch{}}
+function move(e){if(!drawing)return;e.preventDefault();currentStroke.push(ppos(e));redrawUser()}
+function end(e){if(!drawing)return;e.preventDefault();drawing=false;currentStroke=null}
+draw.addEventListener("pointerdown",begin);draw.addEventListener("pointermove",move);draw.addEventListener("pointerup",end);draw.addEventListener("pointercancel",end);
+
+function clearDrawing(){strokes=[];redrawUser();hideResult()}
+function undo(){strokes.pop();redrawUser();hideResult()}
+function hideResult(){$("meter").classList.remove("show");$("feedback").className="feedback";$("feedback").textContent=""}
+
+function buildWideUser(){
+  const r=wrap.getBoundingClientRect(),ctx=userWide.getContext("2d");ctx.clearRect(0,0,r.width,r.height);
+  ctx.strokeStyle="#000";ctx.lineCap="round";ctx.lineJoin="round";
+  const {fs}=glyphSettings();ctx.lineWidth=Math.max(34,fs*.15);strokes.forEach(s=>drawStroke(ctx,s));
+}
+
+function pixelScore(){
+  if(strokes.reduce((n,s)=>n+s.length,0)<10)return null;
+  buildWideUser();
+  const r=wrap.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+  const W=targetMask.width,H=targetMask.height;
+  const t=targetMask.getContext("2d").getImageData(0,0,W,H).data;
+  const n=nearMask.getContext("2d").getImageData(0,0,W,H).data;
+  const u=draw.getContext("2d").getImageData(0,0,W,H).data;
+  const uw=userWide.getContext("2d").getImageData(0,0,W,H).data;
+  let target=0,covered=0,user=0,inside=0;
+  const step=dpr>1?2:1;
+  for(let y=0;y<H;y+=step){
+    for(let x=0;x<W;x+=step){
+      const a=(y*W+x)*4+3;
+      if(t[a]>30){target++;if(uw[a]>20)covered++}
+      if(u[a]>30){user++;if(n[a]>20)inside++}
+    }
+  }
+  const coverage=target?covered/target:0;
+  const precision=user?inside/user:0;
+  let score=(coverage*.58+precision*.42)*100;
+  // discourage very short or excessive scribbling
+  if(coverage<.25)score*=.72;
+  if(precision<.35)score*=.75;
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  return {score,coverage:Math.round(coverage*100),precision:Math.round(precision*100)};
+}
+
+function threshold(){return level==="trace"?58:level==="faint"?53:48}
+
+function evaluate(){
+  const result=pixelScore();
+  if(!result){
+    $("feedback").className="feedback show try";$("feedback").textContent="✏️ Χρειάζεται λίγη περισσότερη γραφή πριν γίνει ο έλεγχος.";return;
+  }
+  const {score,coverage,precision}=result;
+  $("meter").classList.add("show");$("scoreText").textContent=score+"%";$("meterFill").style.width=score+"%";
+  $("coverageText").textContent="Κάλυψη σχήματος: "+coverage+"%";$("precisionText").textContent="Κοντά στις γραμμές: "+precision+"%";
+
+  const key=itemKey(),old=bestScores[key]||0;
+  if(score>old){bestScores[key]=score;localStorage.setItem("gm2-best",JSON.stringify(bestScores))}
+  updateBest();
+
+  const pass=score>=threshold();
+  const fb=$("feedback");
+  if(pass){
+    const first=!completed[key];completed[key]=true;localStorage.setItem("gm2-completed",JSON.stringify(completed));
+    let earned=score>=88?3:score>=72?2:1;
+    if(first){stars+=earned;localStorage.setItem("gm2-stars",stars);$("stars").textContent=stars}
+    if(score>=92 && old<92){perfect++;localStorage.setItem("gm2-perfect",perfect);$("perfect").textContent=perfect}
+    fb.className="feedback show good";
+    fb.textContent=score>=88?"🌟 Καταπληκτικά! Πολύ καθαρό σχήμα!":score>=72?"🎉 Πολύ καλά! Συνέχισε έτσι!":"✅ Μπράβο! Το κατάφερες. Δοκίμασέ το ξανά για ακόμα καλύτερο σκορ!";
+    if(first||score>=88)confetti();
+    renderChoices();renderProgress();
+  }else{
+    fb.className="feedback show bad";
+    if(coverage<45)fb.textContent="🧩 Καλό ξεκίνημα! Προσπάθησε να καλύψεις μεγαλύτερο μέρος του γράμματος.";
+    else if(precision<50)fb.textContent="🎯 Σχεδόν! Προσπάθησε να μείνεις πιο κοντά στο περίγραμμα.";
+    else fb.textContent="💪 Πολύ κοντά! Κάνε άλλη μία προσπάθεια, λίγο πιο αργά.";
+  }
+}
+
+function confetti(){
+  const box=$("confetti"),colors=["#6557ff","#20ad67","#f2a71b","#ff6f91","#42a5f5"];
+  for(let i=0;i<34;i++){const p=document.createElement("div");p.className="piece";p.style.left=Math.random()*100+"vw";p.style.background=colors[i%colors.length];p.style.animationDelay=Math.random()*.3+"s";box.appendChild(p);setTimeout(()=>p.remove(),2100)}
+}
+
+function renderChoices(){
+  const grid=$("choiceGrid");grid.innerHTML="";
+  data[mode].forEach(([ch,name],i)=>{
+    const b=document.createElement("button"),key=`${mode}-${i}`,best=bestScores[key]||0;
+    b.className="choice"+(i===idx?" active":"")+(completed[key]?" done":"");b.setAttribute("aria-label",`${ch} ${name}`);
+    b.innerHTML=`<span>${ch}</span>${best?`<span class="mini">${best}%</span>`:""}`;
+    b.onclick=()=>{idx=i;clearDrawing();updateTarget();renderChoices();renderProgress()};
+    grid.appendChild(b)
+  })
+}
+
+function updateTarget(){
+  const [ch,name]=data[mode][idx];$("targetChar").textContent=ch;$("targetName").textContent=name.charAt(0).toUpperCase()+name.slice(1);
+  $("listTitle").textContent=mode==="numbers"?"Διάλεξε αριθμό":"Διάλεξε γράμμα";
+  $("instruction").textContent=level==="trace"?"Πέρασε το δάχτυλό σου πάνω στις διακεκομμένες γραμμές.":level==="faint"?"Κοίτα το αχνό σχήμα και προσπάθησε να το αντιγράψεις.":"Γράψε το μόνος/η σου μέσα στο πλαίσιο.";
+  $("hint").textContent=level==="trace"?"✏️ Γράψε αργά πάνω στο περίγραμμα. Χρειάζεσαι περίπου 58% για να περάσεις.":level==="faint"?"🎯 Τώρα έχεις λιγότερη βοήθεια. Στόχος: περίπου 53%.":"🚀 Χωρίς πρότυπο! Κράτησε σωστό σχήμα και θέση. Στόχος: περίπου 48%.";
+  updateBest();renderGuide()
+}
+function updateBest(){const s=bestScores[itemKey()]||0;$("best").textContent=s?`Καλύτερο: ${s}%`:"Καλύτερο: —"}
+function renderProgress(){
+  let done=0;for(let i=0;i<data[mode].length;i++)if(completed[`${mode}-${i}`])done++;
+  const total=data[mode].length,p=Math.round(done/total*100);$("progressBar").style.width=p+"%";$("progressText").textContent=`Πρόοδος: ${done}/${total} (${p}%)`
+}
+
+document.querySelectorAll(".tab").forEach(b=>{if(b.dataset.mode===mode)b.classList.add("active");else b.classList.remove("active");b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");mode=b.dataset.mode;localStorage.setItem("gm-mode",mode);idx=0;clearDrawing();updateTarget();renderChoices();renderProgress()}})
+document.querySelectorAll(".level").forEach(b=>{if(b.dataset.level===level)b.classList.add("active");else b.classList.remove("active");b.onclick=()=>{document.querySelectorAll(".level").forEach(x=>x.classList.remove("active"));b.classList.add("active");level=b.dataset.level;localStorage.setItem("gm-level",level);clearDrawing();updateTarget()}})
+
+$("clearBtn").onclick=clearDrawing;$("undoBtn").onclick=undo;$("checkBtn").onclick=evaluate;
+$("guideBtn").onclick=()=>{const on=wrap.classList.toggle("demo");$("guideBtn").setAttribute("aria-pressed",String(on));$("guideBtn").textContent=on?"👀 Οδηγός ON":"👀 Οδηγός"};
+let greekVoice=null;
+function findGreekVoice(){
+  if(!("speechSynthesis" in window)){
+    $("soundBtn").style.display="none";
+    return;
+  }
+  const voices=speechSynthesis.getVoices();
+  greekVoice=
+    voices.find(v=>/^el-GR$/i.test(v.lang)) ||
+    voices.find(v=>/^el([_-]|$)/i.test(v.lang)) ||
+    null;
+
+  if(greekVoice){
+    $("soundBtn").disabled=false;
+    $("soundBtn").style.display="";
+    $("soundBtn").textContent="🔊 Άκου";
+    $("soundBtn").title=`Ελληνική φωνή: ${greekVoice.name}`;
+  }
+}
+
+if("speechSynthesis" in window){
+  $("soundBtn").disabled=true;
+  $("soundBtn").textContent="🔊 Άκου";
+  findGreekVoice();
+  speechSynthesis.addEventListener?.("voiceschanged",findGreekVoice);
+  setTimeout(findGreekVoice,300);
+  setTimeout(()=>{
+    findGreekVoice();
+    if(!greekVoice){
+      $("soundBtn").style.display="none";
+    }
+  },1800);
+}else{
+  $("soundBtn").style.display="none";
+}
+
+$("soundBtn").onclick=()=>{
+  if(!greekVoice)return;
+  speechSynthesis.cancel();
+
+  const [,name]=data[mode][idx];
+
+  // Προφέρουμε μόνο την ελληνική ονομασία.
+  // Δεν στέλνουμε το σύμβολο (π.χ. "Α"), γιατί αρκετά συστήματα
+  // το διαβάζουν ως λατινικό γράμμα ή με λάθος προφορά.
+  const u=new SpeechSynthesisUtterance(name);
+  u.lang="el-GR";
+  u.voice=greekVoice;
+  u.rate=.72;
+  u.pitch=1;
+  u.volume=1;
+  speechSynthesis.speak(u);
+};
+
+$("stars").textContent=stars;$("perfect").textContent=perfect;
+window.addEventListener("resize",()=>{clearTimeout(window.__rs);window.__rs=setTimeout(fitCanvases,100)});
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+renderChoices();renderProgress();updateTarget();setTimeout(fitCanvases,60);
+</script>
+</body>
+</html>
